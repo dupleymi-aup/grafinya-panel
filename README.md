@@ -1,156 +1,123 @@
+<div align="center">
+
 # Графиня — Панель управления
 
-Полнофункциональное Next.js приложение для работы с платформой мониторинга и визуализации данных **Графиня** от Лаборатории Числитель.
+**Grafinya — Control Panel**
 
-## Возможности
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-19-blue?logo=react)](https://react.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38bdf8?logo=tailwindcss)](https://tailwindcss.com/)
+[![shadcn/ui](https://img.shields.io/badge/shadcn%2Fui-new--york-black)](https://ui.shadcn.com/)
+[![License](https://img.shields.io/badge/License-Proprietary-red)](./LICENSE)
 
-### Основные виды
-- **Дашборды** — список и детальный просмотр с виджетами (Line, Bar, Pie, Table, Area, Gauge)
-- **Исследование данных (Explorer)** — редактор запросов, история, сохранённые запросы, графики/таблицы/JSON
-- **Источники данных** — CRUD-операции, проверка состояния, плагин-специфичные поля
-- **Плагины** — обзор 8 типов плагинов (Prometheus, Пульт/Zabbix, CSV, PostgreSQL, JSON, GitLab, Elasticsearch, ClickHouse)
-- **Модули** — список установленных модулей и реестр компонентов
-- **Конструктор** — генератор docker-compose.yml с настраиваемыми сервисами
-- **Активность** — журнал действий пользователя с фильтрами по категориям
-- **Настройки** — общие, подключение, система, внешний вид, безопасность
+---
 
-### UX возможности
-- **Командная палитра** (Ctrl+K / Cmd+K) — глобальный поиск и навигация
-- **Тёмная/светлая тема** — переключение в один клик
-- **Демо-режим** — полностью функциональная работа без подключения к серверу
-- **Уведомления** — выпадающая панель с категориями событий
-- **Справка** — встроенная документация по архитектуре, плагинам, модулям
-- **Горячие клавиши** — Alt+1-8 для навигации, Alt+D для демо-режима, ? для подсказки
-- **Error Boundary** — грациозная обработка ошибок с возможностью восстановления
-- **Мониторинг системы** — live-статус 12 сервисов (backend, frontend, MongoDB, Tarantool, 8 плагинов) с CPU, памятью, диском, сетью
-- **Онбординг-тур** — интерактивный 10-шаговый тур для новых пользователей
-- **Недавние элементы** — быстрый доступ к недавно открытым дашбордам в боковой панели
-- **Журнал активности** — аудит действий пользователя с группировкой по датам и фильтрами
-- **Режим презентации** — полноэкранный режим для NOC/SOC-дисплеев с авто-ротацией виджетов и дашбордов, авто-обновлением данных, скрытием курсора и управлением с клавиатуры (F для входа)
-- **История изменений** — авто-снимки состояния дашборда с предпросмотром и восстановлением любой версии (Ctrl+H)
-- **Метрики запросов** — отслеживание времени выполнения, количества строк, размера ответа и попаданий в кэш с цветовой индикацией
-- **Массовые действия** — выбор нескольких дашбордов для пакетного экспорта, дублирования, тегирования и удаления
-- **8 цветовых палитр** — Янтарь, Океан, Закат, Лес, Монохром, Контраст, Пастель, Светофор — с сохранением выбора пользователя
+**Автор / Author:** Дуплей Максим Игоревич / Dupley Maxim Igorevich
 
-### Работа с данными
-- **CORS-free архитектура** — Next.js API route проксирует запросы к бэкенду Графини
-- **JWT-аутентификация** — автоматическое обновление access token через refresh token
-- **Экспорт CSV/JSON** — выгрузка результатов запросов из Explorer
-- **Виджеты** — добавление, редактирование, удаление, полноэкранный режим, **drag-and-drop переупорядочивание**
-- **Переменные** — интерактивные селекторы на дашбордах
-- **Автообновление** — настраиваемый интервал refresh для дашбордов
-- **Избранное** — отметка любимых дашбордов
-- **Шаблоны дашбордов** — 9 готовых шаблонов в 4 категориях (мониторинг/бизнес/инфра/безопасность)
+**Организация / Organization:** Лаборатория Числитель / Laboratory Chislitel
 
-## Архитектура системы Графиня
+**Интеллектуальная собственность / Intellectual Property:** Дуплей Максим Игоревич / Dupley Maxim Igorevich
 
-| Компонент | Порт | Описание |
-|-----------|------|----------|
-| Backend (Express.js) | 5000 | REST API, JWT-аутентификация |
-| Frontend (React + Vite) | 80 | Пользовательский интерфейс |
-| MongoDB | 27017 | Хранилище дашбордов и пользователей |
-| Tarantool | 3301 | Кэш сессий и горячих данных |
-| Prometheus Plugin | 8080 | Метрики Prometheus |
-| Пульт/Zabbix Plugin | 8081 | Интеграция с Пульт |
-| CSV Plugin | 8082 | Импорт CSV-файлов |
-| PostgreSQL Plugin | 8083 | Запросы к PostgreSQL |
-| JSON Plugin | 8084 | Загрузка JSON API |
-| GitLab Plugin | 8085 | Интеграция с GitLab CI/CD |
-| Elasticsearch Plugin | 8086 | Поиск и аналитика логов |
-| ClickHouse Plugin | 8087 | Аналитические запросы |
+</div>
 
-## Установка
+---
 
-### Требования
-- Node.js 18+ или Bun
-- Доступ к развернутому экземпляру Графини (или используйте демо-режим)
+## О проекте / About the Project
 
-### Запуск в режиме разработки
+**Графиня — Панель управления** — полнофункциональное Next.js приложение для работы с платформой мониторинга и визуализации данных **Графиня** от Лаборатории Числитель. Панель предоставляет интуитивный интерфейс для управления дашбордами, исследований данных, настройки источников данных и мониторинга инфраструктуры.
+
+**Grafinya — Control Panel** is a full-featured Next.js application for interacting with the **Grafinya** monitoring and data visualization platform by Laboratory Chislitel. The panel provides an intuitive interface for managing dashboards, exploring data, configuring data sources, and monitoring infrastructure.
+
+Полные описания / Full documentation:
+- [README на русском языке](README_RU.md)
+- [README in English](README_EN.md)
+
+### Ключевые возможности / Key Features
+
+- **8 основных видов / 8 main views** — дашборды, explorer, источники данных, плагины, модули, конструктор, активность, настройки
+- **Дашборды / Dashboards** — виджеты (Line, Bar, Pie, Table, Area, Gauge), drag-and-drop переупорядочивание
+- **Explorer** — редактор запросов, история, сохранённые запросы, графики/таблицы/JSON
+- **Командная палитра / Command palette** (Ctrl+K) — глобальный поиск и навигация
+- **Демо-режим / Demo mode** — работа без подключения к серверу
+- **Режим презентации / Presentation mode** — полноэкранный режим для NOC/SOC-дисплеев
+- **Шаблоны дашбордов / Dashboard templates** — 9 готовых шаблонов в 4 категориях
+- **8 цветовых палитр / 8 color palettes** — Янтарь, Океан, Закат, Лес, Монохром, Контраст, Пастель, Светофор
+- **Массовые действия / Bulk actions** — пакетный экспорт, дублирование, тегирование, удаление
+- **История изменений / Change history** — авто-снимки состояния дашборда с восстановлением
+- **Мониторинг системы / System monitoring** — live-статус 12 сервисов
+
+### Технологии / Technologies
+
+| Технология | Назначение / Purpose |
+|------------|----------------------|
+| **Next.js 16** | React-фреймворк с App Router / React framework with App Router |
+| **TypeScript 5** | Статическая типизация / Static typing |
+| **React 19** | Библиотека UI / User interface library |
+| **Tailwind CSS 4** | Утилитарные CSS-стили / Utility-first CSS |
+| **shadcn/ui** | Компоненты интерфейса / UI components |
+| **Zustand 5** | Управление состоянием / State management |
+| **Recharts** | Визуализация данных / Data visualization |
+| **Prisma 6** | ORM для базы данных / Database ORM |
+| **Framer Motion 12** | Анимации / Animations |
+
+### Быстрый старт / Quick Start
+
 ```bash
+# Клонировать репозиторий / Clone the repository
+git clone https://github.com/dupleymi-aup/grafinya-panel.git
+cd grafinya-panel
+
+# Установить зависимости / Install dependencies
 bun install
+
+# Запустить в режиме разработки / Run in development mode
 bun run dev
 ```
 
-Приложение будет доступно по адресу http://localhost:3000
+Приложение будет доступно по адресу / Application available at [http://localhost:3000](http://localhost:3000)
 
-### Сборка для production
-```bash
-bun run build
-bun run start
-```
+### Дорожная карта / Roadmap
 
-### Подключение к Графине
-1. Откройте приложение
-2. Нажмите на индикатор подключения в правом верхнем углу
-3. Введите данные:
-   - **Host**: адрес сервера Графини (например, `localhost`)
-   - **Port**: `5000`
-   - **Username**: `admin`
-   - **Password**: `123456`
-4. Нажмите "Подключиться"
+- [x] Дашборды с виджетами и drag-and-drop / Dashboards with widgets and drag-and-drop
+- [x] Explorer с редактором запросов / Explorer with query editor
+- [x] Источники данных / Datasources
+- [x] Плагины (8 типов) / Plugins (8 types)
+- [x] Модули и реестр компонентов / Modules and component registry
+- [x] Конструктор docker-compose / docker-compose constructor
+- [x] Командная палитра / Command palette (Ctrl+K)
+- [x] Демо-режим / Demo mode
+- [x] Тёмная/светлая тема / Dark/light theme
+- [x] Мониторинг системы / System monitoring
+- [x] Режим презентации / Presentation mode
+- [x] История изменений / Change history
+- [x] Массовые действия / Bulk actions
+- [x] Шаблоны дашбордов / Dashboard templates
+- [x] 8 цветовых палитр / 8 color palettes
+- [x] Онбординг-тур / Onboarding tour
 
-Или включите **демо-режим** для тестирования без сервера (Alt+D).
+---
 
-## Стек технологий
+## Автор / Author
 
-- **Next.js 16** (App Router, Server Components)
-- **TypeScript** для типизации
-- **Tailwind CSS 4** для стилизации
-- **shadcn/ui** — библиотека компонентов
-- **Zustand** с persist middleware для состояния
-- **Recharts** для визуализации данных
-- **Lucide React** для иконок
-- **next-themes** для тёмной/светлой темы
+**Дуплей Максим Игоревич / Dupley Maxim Igorevich**
 
-## Структура проекта
+Данный проект является интеллектуальной собственностью Дуплей Максима Игоревича. Все права на программный код, дизайн, контент и учебные материалы принадлежат автору.
 
-```
-src/
-├── app/
-│   ├── api/grafinya/proxy/route.ts  # CORS-free прокси к бэкенду
-│   ├── globals.css
-│   ├── layout.tsx
-│   └── page.tsx                      # Главная страница
-├── components/
-│   ├── activity-log.tsx              # Журнал активности
-│   ├── command-palette.tsx           # Палитра команд (Ctrl+K)
-│   ├── connection-setup.tsx          # Диалог подключения
-│   ├── constructor-view.tsx          # Генератор docker-compose
-│   ├── dashboard-detail-view.tsx     # Детальный просмотр дашборда (с drag&drop)
-│   ├── dashboard-templates.tsx       # Шаблоны дашбордов
-│   ├── dashboards-view.tsx           # Список дашбордов
-│   ├── datasources-view.tsx          # Источники данных
-│   ├── error-boundary.tsx            # Обработка ошибок
-│   ├── explorer-view.tsx             # Исследование данных
-│   ├── help-dialog.tsx               # Справка
-│   ├── modules-view.tsx              # Модули
-│   ├── notifications-dropdown.tsx    # Уведомления
-│   ├── onboarding-tour.tsx           # Тур для новых пользователей
-│   ├── plugins-view.tsx              # Плагины
-│   ├── recent-items.tsx              # Недавние элементы
-│   ├── settings-view.tsx             # Настройки
-│   ├── system-health.tsx             # Мониторинг системы
-│   ├── welcome-screen.tsx            # Экран приветствия
-│   └── ui/                           # shadcn/ui компоненты
-├── hooks/
-│   ├── use-grafinya-api.ts           # Хук API-клиента
-│   ├── use-mobile.ts
-│   └── use-toast.ts
-└── lib/
-    ├── demo-data.ts                  # Демо-данные
-    ├── export-utils.ts               # Экспорт CSV/JSON
-    ├── grafinya-api.ts               # API-клиент
-    ├── store.ts                      # Zustand store
-    └── utils.ts
-```
+This project is the intellectual property of Dupley Maxim Igorevich. All rights to the source code, design, content, and educational materials belong to the author.
 
-## Документация
+---
 
-Полная документация Графини доступна на сайте:
-https://docs.pult.tech/constructor
+## Лицензия / License
 
-## Лицензия
+Данный проект является интеллектуальной собственностью Дуплей Максима Игоревича (Dupley Maxim Igorevich). Условия использования описаны в файле [LICENSE](./LICENSE).
 
-Лаборатория Числитель, 2026
-EOF
-echo "README created"
+This project is the intellectual property of Dupley Maxim Igorevich. Terms of use are described in the [LICENSE](./LICENSE) file.
+
+---
+
+<div align="center">
+
+**Графиня / Grafinya** — © 2025-2026 Дуплей Максим Игоревич / Dupley Maxim Igorevich
+
+</div>
