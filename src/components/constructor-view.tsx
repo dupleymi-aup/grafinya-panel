@@ -191,8 +191,13 @@ export function ConstructorView() {
     return yaml;
   }, [enabledServices, version, domain, smtpEnabled]);
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(composeYaml);
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(composeYaml);
+    } catch {
+      toast({ title: "Не удалось скопировать", variant: "destructive" });
+      return;
+    }
     setCopied(true);
     toast({ title: "Скопировано", description: "docker-compose.yml скопирован в буфер обмена" });
     setTimeout(() => setCopied(false), 2000);

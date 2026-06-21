@@ -69,8 +69,12 @@ export function SettingsView() {
 
   const isConnected = connectionStatus === "connected" || connectionStatus === "demo";
 
-  const copyToClipboard = (text: string, field: string) => {
-    navigator.clipboard.writeText(text);
+  const copyToClipboard = async (text: string, field: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      return;
+    }
     setCopiedField(field);
     setTimeout(() => setCopiedField(null), 2000);
   };

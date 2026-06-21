@@ -25,7 +25,6 @@ import {
   Maximize2,
   Minimize2,
   LayoutDashboard,
-  Settings2,
   BarChart3,
   Table2,
   TrendingUp,
@@ -610,16 +609,32 @@ function renderChartByType(
   }
 
   if (type === "table") {
+    const columns = safeData.length > 0 ? Object.keys(safeData[0]) : [];
     return (
-      <BarChart data={safeData} margin={{ top: 20, right: 30, left: 10, bottom: 20 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-        <XAxis dataKey="name" tick={{ fontSize: 13 }} />
-        <YAxis tick={{ fontSize: 13 }} />
-        <Tooltip
-          contentStyle={{ background: "rgba(15, 23, 42, 0.95)", border: "none", borderRadius: 8, color: "#fff" }}
-        />
-        <Bar dataKey="value" fill={palette.colors[1] ?? palette.primary} radius={[8, 8, 0, 0]} />
-      </BarChart>
+      <div className="overflow-auto max-h-full">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-white/10">
+              {columns.map((col) => (
+                <th key={col} className="px-3 py-2 text-left font-medium text-muted-foreground uppercase tracking-wider text-xs">
+                  {col}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {safeData.map((row, i) => (
+              <tr key={i} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                {columns.map((col) => (
+                  <td key={col} className="px-3 py-2">
+                    {String(row[col] ?? "")}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     );
   }
 
@@ -662,5 +677,3 @@ function generateDemoData(widget: Widget): unknown[] {
   return generateTimeSeriesData(12, widget.title);
 }
 
-// Make sure the unused Settings2 import is referenced to satisfy bundlers
-void Settings2;

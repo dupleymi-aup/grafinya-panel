@@ -233,8 +233,13 @@ export function ExplorerView() {
     }
   };
 
-  const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(text);
+  const handleCopy = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      toast({ title: "Не удалось скопировать", variant: "destructive" });
+      return;
+    }
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
     toast({ title: "Скопировано в буфер обмена" });
