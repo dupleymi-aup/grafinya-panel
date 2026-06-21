@@ -1,12 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
-/**
- * Proxy API route for Graphinya backend requests.
- * Avoids CORS issues when the Graphinya backend is on a different host.
- * 
- * POST /api/grafinya/proxy
- * Body: { path: string, method: string, body?: unknown, baseUrl: string, accessToken?: string }
- */
+const ALLOWED_METHODS = new Set(["GET", "POST", "PUT", "PATCH", "DELETE"]);
+
 export async function POST(request: NextRequest) {
   try {
     const { path, method = "GET", body, baseUrl, accessToken } = await request.json();
@@ -15,6 +10,27 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: "baseUrl and path are required" },
         { status: 400 }
+      );
+    }
+
+    if (!baseUrl.startsWith("http://") && !baseUrl.startsWith("https://")) {
+      return NextResponse.json(
+        { error: "Invalid baseUrl: must be an HTTP(S) URL" },
+        { status: 400 }
+      );
+    }
+
+    if (path.includes("..") || path.includes("//")) {
+      return NextResponse.json(
+        { error: "Invalid path" },
+        { status: 400 }
+      );
+    }
+
+    if (!ALLOWED_METHODS.has(method)) {
+      return NextResponse.json(
+        { error: `Method ${method} is not allowed` },
+        { status: 405 }
       );
     }
 
@@ -39,6 +55,15 @@ export async function POST(request: NextRequest) {
     }
 
     const response = await fetch(targetUrl, fetchOptions);
+    const contentType = response.headers.get("content-type");
+
+    if (!contentType?.includes("application/json")) {
+      return NextResponse.json(
+        { error: "Upstream server returned non-JSON response" },
+        { status: 502 }
+      );
+    }
+
     const data = await response.json();
 
     return NextResponse.json(data, { status: response.status });
