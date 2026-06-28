@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useGraphinyaStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -20,8 +19,6 @@ import {
   LayoutDashboard,
   Search,
   Database,
-  Plug,
-  Activity,
   Bell,
   Keyboard,
   Command,

@@ -16,7 +16,6 @@ import {
   Book,
   Code,
   Activity,
-  Database,
   Plug,
   Blocks,
   ExternalLink,

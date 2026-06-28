@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,12 +14,10 @@ import {
   Cpu,
   MemoryStick,
   Network,
-  Clock,
   RefreshCw,
   CheckCircle2,
   AlertCircle,
   AlertTriangle,
-  Zap,
   TrendingUp,
   TrendingDown,
 } from "lucide-react";

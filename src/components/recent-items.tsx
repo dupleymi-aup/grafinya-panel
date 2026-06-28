@@ -1,9 +1,7 @@
 "use client";
 
 import { useGraphinyaStore } from "@/lib/store";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Clock, LayoutDashboard, Database, Trash2, X } from "lucide-react";
+import { Clock, LayoutDashboard, Database, Trash2 } from "lucide-react";
 
 function formatRelativeTime(ts: number): string {
   const diff = Date.now() - ts;

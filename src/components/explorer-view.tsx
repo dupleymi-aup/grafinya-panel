@@ -35,7 +35,6 @@ import {
   Copy,
   CheckCircle2,
   AlertCircle,
-  Clock,
   History,
   TrendingUp,
   Activity,
@@ -56,9 +55,6 @@ import {
   ResponsiveContainer,
   AreaChart,
   Area,
-  PieChart,
-  Pie,
-  Cell,
   Legend,
 } from "recharts";
 import { useToast } from "@/hooks/use-toast";

@@ -51,12 +51,10 @@ import {
   ArrowLeft,
   LayoutDashboard,
   RefreshCw,
-  Loader2,
   BarChart3,
   Table2,
   Clock,
   Maximize2,
-  Minimize2,
   TrendingUp,
   Activity,
   Database,
@@ -75,8 +73,6 @@ import {
   History,
 } from "lucide-react";
 import {
-  LineChart,
-  Line,
   BarChart,
   Bar,
   XAxis,
@@ -95,7 +91,6 @@ import { useToast } from "@/hooks/use-toast";
 import { PresentationMode } from "@/components/presentation-mode";
 import {
   DashboardHistory,
-  HistoryButton,
   loadHistoryFromStorage,
   saveHistoryToStorage,
   pushSnapshot,

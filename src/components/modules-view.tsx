@@ -8,7 +8,7 @@ import { DEMO_MODULES } from "@/lib/demo-data";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Blocks, Loader2, CheckCircle2, ExternalLink, Settings2, LayoutGrid } from "lucide-react";
+import { Blocks, CheckCircle2, Settings2, LayoutGrid } from "lucide-react";
 
 export function ModulesView() {
   const { modules, setModules, connectionStatus, isLoading, setIsLoading } = useGraphinyaStore();

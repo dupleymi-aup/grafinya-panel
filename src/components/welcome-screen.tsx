@@ -12,13 +12,9 @@ import {
   Plug,
   Blocks,
   Search,
-  ChevronRight,
-  Zap,
   Shield,
-  Globe,
   BarChart3,
   Clock,
-  ArrowRight,
 } from "lucide-react";
 
 const FEATURES = [

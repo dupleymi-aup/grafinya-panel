@@ -38,7 +38,6 @@ import {
   Tag,
   Sparkles,
   Clock,
-  Copy,
   Download,
   Upload,
   LayoutTemplate,
