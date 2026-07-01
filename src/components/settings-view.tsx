@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useGraphinyaStore } from "@/lib/store";
+import { useGraphinyaStore, type TimeRange } from "@/lib/store";
 import { useGraphinyaApi } from "@/hooks/use-grafinya-api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,7 +50,6 @@ export function SettingsView() {
     config,
     connectionStatus,
     currentUser,
-    setConfig,
     tokens,
     isDemoMode,
     logout,
@@ -107,7 +106,7 @@ export function SettingsView() {
       setNewPassword("");
       setConfirmPassword("");
       toast({ title: "Пароль изменён", description: "Пароль успешно обновлён" });
-    } catch (err) {
+    } catch {
       toast({
         title: "Ошибка смены пароля",
         description: "Проверьте текущий пароль",
@@ -258,7 +257,7 @@ export function SettingsView() {
                     Временной диапазон для новых дашбордов
                   </p>
                 </div>
-                <Select value={timeRange} onValueChange={(v) => setTimeRange(v as any)}>
+                <Select value={timeRange} onValueChange={(v) => setTimeRange(v as TimeRange)}>
                   <SelectTrigger className="h-8 w-[120px] text-xs">
                     <SelectValue />
                   </SelectTrigger>

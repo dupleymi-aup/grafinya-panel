@@ -34,21 +34,21 @@ describe("Proxy API - Zod validation", () => {
   it("rejects invalid baseUrl protocol", async () => {
     const req = makeRequest({ baseUrl: "ftp://evil.com", path: "/test" });
     const res = await POST(req);
-    const data = await res.json();
+    await res.json();
     expect(res.status).toBe(400);
   });
 
   it("rejects path traversal", async () => {
     const req = makeRequest({ baseUrl: "http://localhost:8000", path: "/../etc/passwd" });
     const res = await POST(req);
-    const data = await res.json();
+    await res.json();
     expect(res.status).toBe(400);
   });
 
   it("rejects invalid method", async () => {
     const req = makeRequest({ baseUrl: "http://localhost:8000", path: "/test", method: "TRACE" });
     const res = await POST(req);
-    const data = await res.json();
+    await res.json();
     expect(res.status).toBe(400);
   });
 

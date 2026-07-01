@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   Activity,
-  Search,
   Moon,
   Sun,
   Sparkles,

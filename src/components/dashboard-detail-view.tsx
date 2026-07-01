@@ -18,7 +18,7 @@ import {
   rectSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useGraphinyaStore } from "@/lib/store";
+import { useGraphinyaStore, type TimeRange } from "@/lib/store";
 import { useGraphinyaApi } from "@/hooks/use-grafinya-api";
 import type { Dashboard, Widget, DataSource } from "@/lib/grafinya-api";
 import {
@@ -160,7 +160,6 @@ export function DashboardDetailView() {
     connectionStatus,
     timeRange,
     setTimeRange,
-    isDemoMode,
     dashboards,
     dataSources,
     toggleDashboardFavorite,
@@ -196,7 +195,7 @@ export function DashboardDetailView() {
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
-  const widgets = dashboard?.widgets || [];
+  const widgets = useMemo(() => dashboard?.widgets || [], [dashboard?.widgets]);
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
@@ -353,7 +352,7 @@ export function DashboardDetailView() {
         setDashboard((prev) =>
           prev ? { ...prev, title: editTitle, description: editDesc } : null
         );
-      } catch (err) {
+      } catch {
         toast({
           title: "Ошибка сохранения",
           description: "Не удалось обновить дашборд",
@@ -433,7 +432,7 @@ export function DashboardDetailView() {
     const updated = pushSnapshot(loadHistoryFromStorage(), dashboard, label, "auto");
     saveHistoryToStorage(updated);
     setSnapshotCount(updated[dashboard._id]?.length ?? 0);
-  }, [dashboard?.title, dashboard?.widgets, dashboard?.variables]);
+  }, [dashboard]);
 
   const handleRestoreSnapshot = (snapshot: DashboardSnapshot) => {
     if (!dashboard) return;
@@ -452,19 +451,6 @@ export function DashboardDetailView() {
       w: snapshot.widgets.map((w) => w.id),
       v: (snapshot.variables ?? []).map((v) => `${v.name}=${v.current}`),
     });
-  };
-
-  const handleManualSnapshot = () => {
-    if (!dashboard) return;
-    const updated = pushSnapshot(
-      loadHistoryFromStorage(),
-      dashboard,
-      `Ручной снимок — ${new Date().toLocaleTimeString("ru-RU")}`,
-      "user"
-    );
-    saveHistoryToStorage(updated);
-    setSnapshotCount(updated[dashboard._id]?.length ?? 0);
-    toast({ title: "Снимок сохранён", description: "Текущее состояние зафиксировано" });
   };
 
   // Keyboard shortcut: F to enter presentation mode
@@ -646,7 +632,7 @@ export function DashboardDetailView() {
             </Button>
           )}
           {/* Time range picker */}
-          <Select value={timeRange} onValueChange={(v) => setTimeRange(v as any)}>
+          <Select value={timeRange} onValueChange={(v) => setTimeRange(v as TimeRange)}>
             <SelectTrigger className="h-8 w-[100px] text-xs">
               <Clock className="mr-1 h-3 w-3" />
               <SelectValue />
@@ -1068,7 +1054,6 @@ function renderWidget(
 ) {
   const color = CHART_COLORS[idx % CHART_COLORS.length];
   const color2 = CHART_COLORS[(idx + 1) % CHART_COLORS.length];
-  const color3 = CHART_COLORS[(idx + 2) % CHART_COLORS.length];
   const height = isFullscreen ? "100%" : "100%";
 
   const tooltipStyle = {

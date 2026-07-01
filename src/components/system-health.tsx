@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
 import {
   Activity,
   Server,
@@ -44,7 +43,6 @@ interface ServiceHealth {
   color: string;
 }
 
-const generateLatency = () => Math.floor(Math.random() * 80) + 20;
 const generateCpu = () => Math.floor(Math.random() * 60) + 15;
 const generateMemory = () => Math.floor(Math.random() * 40) + 40;
 
@@ -184,11 +182,11 @@ const SERVICES: ServiceHealth[] = [
 ];
 
 export function SystemHealthWidget({ compact = false }: { compact?: boolean }) {
-  const [lastUpdate, setLastUpdate] = useState(Date.now());
-  const [cpu, setCpu] = useState(generateCpu());
-  const [memory, setMemory] = useState(generateMemory());
-  const [networkIn, setNetworkIn] = useState(Math.floor(Math.random() * 500) + 100);
-  const [networkOut, setNetworkOut] = useState(Math.floor(Math.random() * 300) + 50);
+  const [lastUpdate, setLastUpdate] = useState(() => Date.now());
+  const [cpu, setCpu] = useState(() => generateCpu());
+  const [memory, setMemory] = useState(() => generateMemory());
+  const [networkIn, setNetworkIn] = useState(() => Math.floor(Math.random() * 500) + 100);
+  const [networkOut, setNetworkOut] = useState(() => Math.floor(Math.random() * 300) + 50);
 
   // Auto-refresh
   useEffect(() => {

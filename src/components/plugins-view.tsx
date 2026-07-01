@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useCallback } from "react";
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useGraphinyaStore } from "@/lib/store";
 import { useGraphinyaApi } from "@/hooks/use-grafinya-api";

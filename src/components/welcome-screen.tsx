@@ -72,7 +72,7 @@ const STATS = [
 ];
 
 export function WelcomeScreen() {
-  const { enableDemoMode, setConnectionStatus } = useGraphinyaStore();
+  const { enableDemoMode } = useGraphinyaStore();
 
   return (
     <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center">

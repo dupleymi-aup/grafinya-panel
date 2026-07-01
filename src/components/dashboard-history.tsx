@@ -157,20 +157,6 @@ export function DashboardHistory({
     [dashboard, dashboardId, updateDashboard, onRestore, onOpenChange, toast]
   );
 
-  const handleDelete = useCallback(
-    (snapshotId: string) => {
-      setHistory((prev) => {
-        const list = prev[dashboardId] ?? [];
-        const newList = list.filter((s) => s.id !== snapshotId);
-        const updated = { ...prev, [dashboardId]: newList };
-        saveHistoryToStorage(updated);
-        return updated;
-      });
-      if (previewId === snapshotId) setPreviewId(null);
-    },
-    [dashboardId, previewId]
-  );
-
   const handleClearAll = useCallback(() => {
     setHistory((prev) => {
       const updated = { ...prev, [dashboardId]: [] };

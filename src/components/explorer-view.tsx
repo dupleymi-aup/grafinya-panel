@@ -123,7 +123,7 @@ interface SavedQuery {
 }
 
 export function ExplorerView() {
-  const { connectionStatus, dataSources, isDemoMode, setDataSources } = useGraphinyaStore();
+  const { connectionStatus, dataSources, isDemoMode } = useGraphinyaStore();
   const { call } = useGraphinyaApi();
   const { toast } = useToast();
   const isConnected = connectionStatus === "connected" || connectionStatus === "demo";

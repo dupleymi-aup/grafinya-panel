@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useGraphinyaStore } from "@/lib/store";
 import { useGraphinyaApi } from "@/hooks/use-grafinya-api";
-import type { Dashboard, Widget } from "@/lib/grafinya-api";
+import type { Widget } from "@/lib/grafinya-api";
 import { generateTimeSeriesData, generatePieData, generateTableData } from "@/lib/demo-data";
 import { getPaletteById } from "@/lib/chart-palettes";
 import { Button } from "@/components/ui/button";
@@ -32,7 +32,6 @@ import {
   RefreshCw,
 } from "lucide-react";
 import {
-  LineChart,
   Line,
   BarChart,
   Bar,
@@ -95,7 +94,7 @@ export function PresentationMode({ dashboardId, onExit }: PresentationModeProps)
   const [showControls, setShowControls] = useState(true);
 
   // Hide cursor and controls after 5 seconds of inactivity
-  const [lastActivity, setLastActivity] = useState(Date.now());
+  const [lastActivity, setLastActivity] = useState(() => Date.now());
 
   const activeDashboard = useMemo(
     () => dashboards.find((d) => d._id === activeDashboardId) ?? null,
@@ -550,7 +549,7 @@ function PresentationWidget({
     return () => {
       cancelled = true;
     };
-  }, [widget.id, widget.query, widget.dataSourceId, timeRange, isDemo]);
+  }, [widget, timeRange, isDemo, performQuery]);
 
   const widgetTitle = widget.title || "Без названия";
 

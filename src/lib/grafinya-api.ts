@@ -218,8 +218,8 @@ export class GraphinyaClient {
 
     if (response.status === 401 && this.tokens?.refreshToken) {
       const refreshed = await this.refreshTokens();
-      if (refreshed) {
-        headers["Authorization"] = `Bearer ${this.tokens!.accessToken}`;
+      if (refreshed && this.tokens) {
+        headers["Authorization"] = `Bearer ${this.tokens.accessToken}`;
         const retryResponse = await fetch(url, { ...options, headers });
         if (!retryResponse.ok) {
           const error = await retryResponse.json().catch(() => ({}));

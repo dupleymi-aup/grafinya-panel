@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useGraphinyaStore } from "@/lib/store";
 import { useGraphinyaApi } from "@/hooks/use-grafinya-api";
@@ -35,7 +35,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Database,
   Plus,
@@ -48,8 +47,6 @@ import {
   RefreshCw,
   Edit3,
   Save,
-  X,
-  Server,
   Shield,
   Globe,
   FileText,
@@ -203,7 +200,7 @@ export function DataSourcesView() {
         });
         toast({ title: "Источник данных создан", description: newName });
         queryClient.invalidateQueries({ queryKey: ["datasources"] });
-      } catch (err) {
+      } catch {
         toast({ title: "Ошибка создания", variant: "destructive" });
       }
     }
@@ -245,7 +242,7 @@ export function DataSourcesView() {
         });
         toast({ title: "Источник данных обновлён", description: newName });
         queryClient.invalidateQueries({ queryKey: ["datasources"] });
-      } catch (err) {
+      } catch {
         toast({ title: "Ошибка обновления", variant: "destructive" });
       }
     }
@@ -264,7 +261,7 @@ export function DataSourcesView() {
       await call({ path: `/datasources/${id}`, method: "DELETE" });
       toast({ title: "Источник данных удалён" });
       queryClient.invalidateQueries({ queryKey: ["datasources"] });
-    } catch (err) {
+    } catch {
       toast({ title: "Ошибка удаления", variant: "destructive" });
     }
   };

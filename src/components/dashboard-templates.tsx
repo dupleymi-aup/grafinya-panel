@@ -23,9 +23,6 @@ import {
   Activity,
   TrendingUp,
   AlertTriangle,
-  Cpu,
-  HardDrive,
-  Network,
   ShoppingCart,
   Users,
   LayoutDashboard,
@@ -549,7 +546,7 @@ export function DashboardTemplates({ open, onOpenChange }: DashboardTemplatesPro
             refreshTime: template.refreshTime,
           },
         });
-      } catch (err) {
+      } catch {
         toast({
           title: "Ошибка",
           description: "Не удалось создать дашборд из шаблона",

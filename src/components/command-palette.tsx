@@ -52,7 +52,6 @@ export function CommandPalette() {
     isDemoMode,
     enableDemoMode,
     logout,
-    connectionStatus,
     setCurrentView,
     setSelectedDashboardId,
   } = useGraphinyaStore();
@@ -74,8 +73,6 @@ export function CommandPalette() {
     setCurrentView(view);
     setOpen(false);
   };
-
-  const isConnected = connectionStatus === "connected" || connectionStatus === "demo";
 
   const actions: CommandAction[] = [
     // Navigation

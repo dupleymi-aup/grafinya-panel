@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useGraphinyaStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -167,7 +166,6 @@ const IMAGE_NAME = "hub.pult.tech/graphinya/graphinya";
 const TAGS = ["1.3.0", "1.2.0", "1.1.0", "latest"];
 
 export function ConstructorView() {
-  const { connectionStatus } = useGraphinyaStore();
   const { toast } = useToast();
   const [enabledServices, setEnabledServices] = useState<Set<string>>(
     new Set(SERVICES.filter((s) => s.defaultEnabled).map((s) => s.id))
@@ -176,8 +174,6 @@ export function ConstructorView() {
   const [domain, setDomain] = useState("");
   const [smtpEnabled, setSmtpEnabled] = useState(false);
   const [copied, setCopied] = useState(false);
-
-  const isConnected = connectionStatus === "connected" || connectionStatus === "demo";
 
   const toggleService = (id: string) => {
     const service = SERVICES.find((s) => s.id === id);
@@ -192,7 +188,6 @@ export function ConstructorView() {
 
   const composeYaml = useMemo(() => {
     const enabled = SERVICES.filter((s) => enabledServices.has(s.id));
-    const hasPlugin = enabled.some((s) => s.category === "plugin");
 
     let yaml = `# docker-compose.yml — Графиня ${version}\n# Сгенерировано конструктором\n\n`;
     yaml += `version: "3.8"\n\n`;

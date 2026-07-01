@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useGraphinyaStore } from "@/lib/store";
 import { useGraphinyaApi } from "@/hooks/use-grafinya-api";
+import type { User } from "@/lib/grafinya-api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,7 +19,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Server,
-  User,
+  User as UserIcon,
   Lock,
   Loader2,
   CheckCircle2,
@@ -26,7 +27,6 @@ import {
   Wifi,
   Sparkles,
   Info,
-  Key,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -39,7 +39,6 @@ export function ConnectionSetup() {
     setTokens,
     setCurrentUser,
     enableDemoMode,
-    isDemoMode,
   } = useGraphinyaStore();
   const { call } = useGraphinyaApi();
   const { toast } = useToast();
@@ -106,13 +105,13 @@ export function ConnectionSetup() {
       const user = await call({
         path: "/auth/me",
       });
-      setCurrentUser(user as any);
+      setCurrentUser(user as User);
 
       setConnectionStatus("connected");
       setOpen(false);
       toast({
         title: "Подключено к Графине",
-        description: `Вы вошли как ${(user as any)?.username || username}`,
+        description: `Вы вошли как ${(user as User)?.username || username}`,
       });
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Не удалось подключиться";
@@ -254,7 +253,7 @@ export function ConnectionSetup() {
                 <Label className="text-sm font-medium">Учётные данные</Label>
                 <div className="space-y-2">
                   <div className="relative">
-                    <User className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                    <UserIcon className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                     <Input
                       placeholder="Логин"
                       value={username}

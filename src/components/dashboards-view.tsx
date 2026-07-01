@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useGraphinyaStore } from "@/lib/store";
 import { useGraphinyaApi } from "@/hooks/use-grafinya-api";
 import type { Dashboard } from "@/lib/grafinya-api";
@@ -56,7 +56,6 @@ export function DashboardsView() {
     connectionStatus,
     isDemoMode,
     toggleDashboardFavorite,
-    addWidgetToDashboard,
   } = useGraphinyaStore();
   const { call } = useGraphinyaApi();
   const { toast } = useToast();
@@ -125,7 +124,7 @@ export function DashboardsView() {
         });
         toast({ title: "Дашборд создан", description: newTitle });
         queryClient.invalidateQueries({ queryKey: ["dashboards"] });
-      } catch (err) {
+      } catch {
         toast({
           title: "Ошибка",
           description: "Не удалось создать дашборд",
@@ -149,7 +148,7 @@ export function DashboardsView() {
       await call({ path: `/dashboards/${id}`, method: "DELETE" });
       toast({ title: "Дашборд удалён" });
       queryClient.invalidateQueries({ queryKey: ["dashboards"] });
-    } catch (err) {
+    } catch {
       toast({ title: "Ошибка удаления", variant: "destructive" });
     }
   };
@@ -544,9 +543,9 @@ function DashboardCard({
   onOpen,
   onDelete,
   onToggleFavorite,
-  onDuplicate,
+  onDuplicate: _onDuplicate,
   onExport,
-  isDemo,
+  isDemo: _isDemo,
   selectionMode,
   selected,
   onToggleSelection,
