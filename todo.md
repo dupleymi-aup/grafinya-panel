@@ -49,7 +49,7 @@
 
 ### Типизация
 - [x] **`noImplicitAny: true`** — включена строгая типизация
-- [ ] **`moduleData?: Record<string, unknown>`** в `Widget` типе — слишком широкий тип, стоит уточнить
+- [x] **`moduleData?: Record<string, unknown>`** в `Widget` типе — уточнён до `WidgetType` union type, мёртвое поле удалено
 
 ---
 
