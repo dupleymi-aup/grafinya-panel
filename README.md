@@ -15,8 +15,6 @@
 
 **Автор / Author:** Дуплей Максим Игоревич / Dupley Maxim Igorevich
 
-**Организация / Organization:** Лаборатория Числитель / Laboratory Chislitel
-
 **Интеллектуальная собственность / Intellectual Property:** Дуплей Максим Игоревич / Dupley Maxim Igorevich
 
 </div>
