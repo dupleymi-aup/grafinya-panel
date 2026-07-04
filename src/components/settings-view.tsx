@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useGraphinyaStore, type TimeRange } from "@/lib/store";
 import { useGraphinyaApi } from "@/hooks/use-grafinya-api";
+import { useTranslation } from "@/hooks/use-translation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -59,6 +60,7 @@ export function SettingsView() {
   const { call } = useGraphinyaApi();
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
+  const { t } = useTranslation();
 
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [oldPassword, setOldPassword] = useState("");
@@ -145,7 +147,7 @@ export function SettingsView() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Настройки</h2>
+        <h2 className="text-2xl font-bold tracking-tight">{t("settings.title")}</h2>
         <p className="text-muted-foreground">Конфигурация подключения и параметры системы</p>
       </div>
 
@@ -153,23 +155,23 @@ export function SettingsView() {
         <TabsList className="w-full md:w-auto">
           <TabsTrigger value="general" className="flex items-center gap-1.5">
             <Settings className="h-3.5 w-3.5" />
-            Общие
+            {t("settings.tabs.general")}
           </TabsTrigger>
           <TabsTrigger value="connection" className="flex items-center gap-1.5">
             <Server className="h-3.5 w-3.5" />
-            Подключение
+            {t("settings.tabs.connection")}
           </TabsTrigger>
           <TabsTrigger value="system" className="flex items-center gap-1.5">
             <Activity className="h-3.5 w-3.5" />
-            Система
+            {t("settings.tabs.system")}
           </TabsTrigger>
           <TabsTrigger value="appearance" className="flex items-center gap-1.5">
             <Palette className="h-3.5 w-3.5" />
-            Внешний вид
+            {t("settings.tabs.appearance")}
           </TabsTrigger>
           <TabsTrigger value="security" className="flex items-center gap-1.5">
             <Shield className="h-3.5 w-3.5" />
-            Безопасность
+            {t("settings.tabs.security")}
           </TabsTrigger>
         </TabsList>
 
@@ -516,36 +518,36 @@ export function SettingsView() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Palette className="h-4 w-4 text-amber-500" />
-                Тема оформления
+                {t("settings.theme")}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { value: "light", label: "Светлая", desc: "Классическая светлая тема" },
-                  { value: "dark", label: "Тёмная", desc: "Тёмная тема для работы ночью" },
-                  { value: "system", label: "Системная", desc: "Автоматически по настройкам ОС" },
-                ].map((t) => (
+                  { value: "light", label: t("settings.themeLight"), desc: t("settings.themeLightDesc") },
+                  { value: "dark", label: t("settings.themeDark"), desc: t("settings.themeDarkDesc") },
+                  { value: "system", label: t("settings.themeSystem"), desc: t("settings.themeSystemDesc") },
+                ].map((themeOption) => (
                   <button
-                    key={t.value}
-                    onClick={() => setTheme(t.value)}
+                    key={themeOption.value}
+                    onClick={() => setTheme(themeOption.value)}
                     className={`rounded-xl border-2 p-4 text-center transition-all ${
-                      theme === t.value
+                      theme === themeOption.value
                         ? "border-amber-500 bg-amber-500/5"
                         : "border-border hover:border-amber-500/30"
                     }`}
                   >
                     <div
                       className={`mx-auto mb-2 h-8 w-12 rounded-md ${
-                        t.value === "light"
+                        themeOption.value === "light"
                           ? "border bg-white"
-                          : t.value === "dark"
+                          : themeOption.value === "dark"
                             ? "border-zinc-700 bg-zinc-900"
                             : "border bg-gradient-to-r from-white to-zinc-900"
                       }`}
                     />
-                    <p className="text-sm font-medium">{t.label}</p>
-                    <p className="text-muted-foreground text-[10px]">{t.desc}</p>
+                    <p className="text-sm font-medium">{themeOption.label}</p>
+                    <p className="text-muted-foreground text-[10px]">{themeOption.desc}</p>
                   </button>
                 ))}
               </div>
