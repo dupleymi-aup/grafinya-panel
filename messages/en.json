@@ -92,6 +92,23 @@
     "hoursAgo": "{count}h ago",
     "daysAgo": "{count}d ago"
   },
+  "plugins": {
+    "title": "Plugins",
+    "subtitle": "{count} plugin{suffix} connected",
+    "subtitleEmpty": "Connect data sources via plugins",
+    "hint": "Connect to the Graphinya server to view installed plugins."
+  },
+  "modules": {
+    "title": "Modules",
+    "subtitle": "{count} module{suffix} connected",
+    "subtitleEmpty": "Platform extensions with custom widgets",
+    "hint": "Connect to the Graphinya server to view installed modules.",
+    "active": "Active",
+    "inactive": "Inactive",
+    "scope": "Scope",
+    "entryPoint": "Entry point",
+    "components": "Components"
+  },
   "welcome": {
     "title": "Graphinya",
     "desc": "Data visualization and monitoring system by {lab}",

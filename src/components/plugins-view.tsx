@@ -1,6 +1,7 @@
 "use client";
 
 import { useGraphinyaStore } from "@/lib/store";
+import { useTranslation } from "@/hooks/use-translation";
 import type { Plugin } from "@/lib/grafinya-api";
 import { DEMO_PLUGINS } from "@/lib/demo-data";
 import { useGraphinyaQuery } from "@/hooks/use-graphinya-query";
@@ -44,6 +45,7 @@ const PLUGIN_COLORS: Record<string, string> = {
 export function PluginsView() {
   const { plugins, setPlugins, connectionStatus } =
     useGraphinyaStore();
+  const { t } = useTranslation();
 
   const { isLoading } = useGraphinyaQuery<Plugin>({
     queryKey: "plugins",
@@ -57,11 +59,11 @@ export function PluginsView() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Плагины</h2>
+        <h2 className="text-2xl font-bold tracking-tight">{t("plugins.title")}</h2>
         <p className="text-muted-foreground">
           {isConnected
-            ? `${plugins.length} плагин${plugins.length === 1 ? "" : plugins.length < 5 ? "а" : "ов"} подключено`
-            : "Подключите источники данных через плагины"}
+            ? t("plugins.subtitle", { count: String(plugins.length), suffix: plugins.length === 1 ? "" : plugins.length < 5 ? "а" : "ов" })
+            : t("plugins.subtitleEmpty")}
         </p>
       </div>
 
@@ -70,7 +72,7 @@ export function PluginsView() {
         <div className="flex items-center gap-3 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
           <Plug className="h-5 w-5 shrink-0 text-amber-500" />
           <p className="text-sm text-amber-600 dark:text-amber-400">
-            Подключитесь к серверу Графини для просмотра установленных плагинов.
+            {t("plugins.hint")}
           </p>
         </div>
       )}

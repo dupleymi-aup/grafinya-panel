@@ -1,6 +1,7 @@
 "use client";
 
 import { useGraphinyaStore } from "@/lib/store";
+import { useTranslation } from "@/hooks/use-translation";
 import type { Module } from "@/lib/grafinya-api";
 import { DEMO_MODULES } from "@/lib/demo-data";
 import { useGraphinyaQuery } from "@/hooks/use-graphinya-query";
@@ -11,6 +12,7 @@ import { Blocks, CheckCircle2, Settings2, LayoutGrid } from "lucide-react";
 
 export function ModulesView() {
   const { modules, setModules, connectionStatus } = useGraphinyaStore();
+  const { t } = useTranslation();
 
   const { isLoading } = useGraphinyaQuery<Module>({
     queryKey: "modules",
@@ -25,11 +27,11 @@ export function ModulesView() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Модули</h2>
+        <h2 className="text-2xl font-bold tracking-tight">{t("modules.title")}</h2>
         <p className="text-muted-foreground">
           {isConnected
-            ? `${modules.length} модул${modules.length === 1 ? "ь" : modules.length < 5 ? "я" : "ей"} подключено`
-            : "Расширения платформы с кастомными виджетами"}
+            ? t("modules.subtitle", { count: String(modules.length), suffix: modules.length === 1 ? "" : modules.length < 5 ? "я" : "ей" })
+            : t("modules.subtitleEmpty")}
         </p>
       </div>
 
@@ -38,7 +40,7 @@ export function ModulesView() {
         <div className="flex items-center gap-3 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
           <Blocks className="h-5 w-5 shrink-0 text-amber-500" />
           <p className="text-sm text-amber-600 dark:text-amber-400">
-            Подключитесь к серверу Графини для просмотра установленных модулей.
+            {t("modules.hint")}
           </p>
         </div>
       )}
@@ -74,11 +76,11 @@ export function ModulesView() {
                         {mod.isActive ? (
                           <div className="flex items-center gap-1">
                             <CheckCircle2 className="h-3 w-3 text-emerald-500" />
-                            <span className="text-xs text-emerald-500">Активен</span>
+                            <span className="text-xs text-emerald-500">{t("modules.active")}</span>
                           </div>
                         ) : (
                           <Badge variant="secondary" className="text-xs">
-                            Неактивен
+                            {t("modules.inactive")}
                           </Badge>
                         )}
                       </div>
