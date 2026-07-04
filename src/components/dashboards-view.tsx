@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo, memo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useGraphinyaStore } from "@/lib/store";
 import { useGraphinyaApi } from "@/hooks/use-grafinya-api";
@@ -228,15 +228,19 @@ export function DashboardsView() {
     });
   };
 
-  const filtered = dashboards.filter(
-    (d) =>
-      d.title.toLowerCase().includes(search.toLowerCase()) ||
-      d.description?.toLowerCase().includes(search.toLowerCase()) ||
-      d.tags?.some((t) => t.toLowerCase().includes(search.toLowerCase()))
+  const filtered = useMemo(
+    () =>
+      dashboards.filter(
+        (d) =>
+          d.title.toLowerCase().includes(search.toLowerCase()) ||
+          d.description?.toLowerCase().includes(search.toLowerCase()) ||
+          d.tags?.some((t) => t.toLowerCase().includes(search.toLowerCase()))
+      ),
+    [dashboards, search]
   );
 
-  const favorites = filtered.filter((d) => d.isFavorite);
-  const regular = filtered.filter((d) => !d.isFavorite);
+  const favorites = useMemo(() => filtered.filter((d) => d.isFavorite), [filtered]);
+  const regular = useMemo(() => filtered.filter((d) => !d.isFavorite), [filtered]);
 
   const toggleSelection = useCallback((id: string) => {
     setSelectedIds((prev) => {
@@ -529,7 +533,7 @@ export function DashboardsView() {
   );
 }
 
-function DashboardCard({
+const DashboardCard = memo(function DashboardCard({
   dashboard,
   onOpen,
   onDelete,
@@ -672,4 +676,4 @@ function DashboardCard({
       </CardContent>
     </Card>
   );
-}
+});

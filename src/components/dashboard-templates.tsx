@@ -36,6 +36,15 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+const WIDGET_TYPE_ICONS: Record<string, React.ReactNode> = {
+  line: <LineChart className="h-3 w-3" />,
+  bar: <BarChart3 className="h-3 w-3" />,
+  area: <Activity className="h-3 w-3" />,
+  pie: <PieChart className="h-3 w-3" />,
+  table: <Table2 className="h-3 w-3" />,
+  gauge: <Gauge className="h-3 w-3" />,
+};
+
 // ---- Template definitions ----
 interface DashboardTemplate {
   id: string;
@@ -582,15 +591,6 @@ export function DashboardTemplates({ open, onOpenChange }: DashboardTemplatesPro
     setSelectedTemplate(null);
   };
 
-  const widgetTypeIcons: Record<string, React.ReactNode> = {
-    line: <LineChart className="h-3 w-3" />,
-    bar: <BarChart3 className="h-3 w-3" />,
-    area: <Activity className="h-3 w-3" />,
-    pie: <PieChart className="h-3 w-3" />,
-    table: <Table2 className="h-3 w-3" />,
-    gauge: <Gauge className="h-3 w-3" />,
-  };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[85vh] max-w-4xl">
@@ -669,7 +669,7 @@ export function DashboardTemplates({ open, onOpenChange }: DashboardTemplatesPro
                       className="bg-muted text-muted-foreground flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px]"
                       title={w.title}
                     >
-                      {widgetTypeIcons[w.type] || <BarChart3 className="h-3 w-3" />}
+                      {WIDGET_TYPE_ICONS[w.type] || <BarChart3 className="h-3 w-3" />}
                       {w.type}
                     </span>
                   ))}

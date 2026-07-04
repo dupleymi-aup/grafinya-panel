@@ -14,7 +14,7 @@ interface ProxyRequestOptions {
 }
 
 export function useGraphinyaApi() {
-  const { config, tokens } = useGraphinyaStore();
+  const config = useGraphinyaStore((s) => s.config);
 
   const call = useCallback(
     async <T = unknown>(options: ProxyRequestOptions): Promise<T> => {
@@ -30,7 +30,6 @@ export function useGraphinyaApi() {
           method: options.method || "GET",
           body: options.body,
           baseUrl: config.baseUrl,
-          accessToken: tokens?.accessToken,
         }),
       });
 
@@ -41,7 +40,7 @@ export function useGraphinyaApi() {
 
       return response.json();
     },
-    [config.baseUrl, tokens?.accessToken]
+    [config.baseUrl]
   );
 
   return { call };

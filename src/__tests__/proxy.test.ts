@@ -24,7 +24,7 @@ describe("Proxy API - Zod validation", () => {
   });
 
   it("rejects missing path", async () => {
-    const req = makeRequest({ baseUrl: "http://localhost:8000" });
+    const req = makeRequest({ baseUrl: "http://example.com:8000" });
     const res = await POST(req);
     const data = await res.json();
     expect(res.status).toBe(400);
@@ -39,14 +39,18 @@ describe("Proxy API - Zod validation", () => {
   });
 
   it("rejects path traversal", async () => {
-    const req = makeRequest({ baseUrl: "http://localhost:8000", path: "/../etc/passwd" });
+    const req = makeRequest({ baseUrl: "http://example.com:8000", path: "/../etc/passwd" });
     const res = await POST(req);
     await res.json();
     expect(res.status).toBe(400);
   });
 
   it("rejects invalid method", async () => {
-    const req = makeRequest({ baseUrl: "http://localhost:8000", path: "/test", method: "TRACE" });
+    const req = makeRequest({
+      baseUrl: "http://example.com:8000",
+      path: "/test",
+      method: "TRACE",
+    });
     const res = await POST(req);
     await res.json();
     expect(res.status).toBe(400);
@@ -60,11 +64,11 @@ describe("Proxy API - Zod validation", () => {
       })
     );
 
-    const req = makeRequest({ baseUrl: "http://localhost:8000", path: "/dashboards" });
+    const req = makeRequest({ baseUrl: "http://example.com:8000", path: "/dashboards" });
     const res = await POST(req);
     expect(res.status).toBe(200);
     expect(fetch).toHaveBeenCalledWith(
-      "http://localhost:8000/api/v1/dashboards",
+      "http://example.com:8000/api/v1/dashboards",
       expect.objectContaining({ method: "GET" })
     );
   });
@@ -78,10 +82,9 @@ describe("Proxy API - Zod validation", () => {
     );
 
     const req = makeRequest({
-      baseUrl: "http://localhost:8000",
+      baseUrl: "http://example.com:8000",
       path: "/dashboards",
       method: "GET",
-      accessToken: "token123",
     });
     const res = await POST(req);
     const data = await res.json();
@@ -97,8 +100,40 @@ describe("Proxy API - Zod validation", () => {
       })
     );
 
-    const req = makeRequest({ baseUrl: "http://localhost:8000", path: "/test" });
+    const req = makeRequest({ baseUrl: "http://example.com:8000", path: "/test" });
     const res = await POST(req);
     expect(res.status).toBe(502);
+  });
+
+  it("rejects requests to localhost (SSRF protection)", async () => {
+    const req = makeRequest({ baseUrl: "http://localhost:8000", path: "/test" });
+    const res = await POST(req);
+    const data = await res.json();
+    expect(res.status).toBe(403);
+    expect(data.error).toContain("private/internal hosts");
+  });
+
+  it("rejects requests to 127.0.0.1", async () => {
+    const req = makeRequest({ baseUrl: "http://127.0.0.1:8000", path: "/test" });
+    const res = await POST(req);
+    expect(res.status).toBe(403);
+  });
+
+  it("rejects requests to 10.x.x.x private range", async () => {
+    const req = makeRequest({ baseUrl: "http://10.0.0.1:8000", path: "/test" });
+    const res = await POST(req);
+    expect(res.status).toBe(403);
+  });
+
+  it("rejects requests to 192.168.x.x private range", async () => {
+    const req = makeRequest({ baseUrl: "http://192.168.1.1:8000", path: "/test" });
+    const res = await POST(req);
+    expect(res.status).toBe(403);
+  });
+
+  it("rejects requests to .internal domains", async () => {
+    const req = makeRequest({ baseUrl: "http://db.internal:8000", path: "/test" });
+    const res = await POST(req);
+    expect(res.status).toBe(403);
   });
 });

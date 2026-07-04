@@ -13,7 +13,10 @@
 - [x] **Включить `noImplicitAny: true`** в `tsconfig.json:14` — сейчас `false`, что снижает качество типизации
 - [x] **Валидация на серверном прокси** — Zod-схема для валидации baseUrl, path, method
 - [x] **Прокси проверяет Content-Type ответа** — возвращает 502 для не-JSON ответов
-- [ ] **Access token передаётся в теле POST-запроса** через прокси — лучше через заголовки Cookie/HttpOnly
+- [x] **SSRF-защита прокси** — блокировка запросов на localhost, 127.0.0.1, приватные диапазоны, .internal/.local домены
+- [x] **Security headers** — CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, X-XSS-Protection
+- [x] **Удалён access token из тела POST-запроса** — больше не передаётся через прокси
+- [ ] **Access token хранится в localStorage** — XSS-уязвимость, рассмотреть httpOnly cookie
 
 ### База данных
 - [x] **Prisma schema не использовался** — удалён вместе с `db.ts` и зависимостями
@@ -50,12 +53,19 @@
 ### Типизация
 - [x] **`noImplicitAny: true`** — включена строгая типизация
 - [x] **`moduleData?: Record<string, unknown>`** в `Widget` типе — уточнён до `WidgetType` union type, мёртвое поле удалено
+- [x] **`consistent-type-imports`** — ESLint автоматически исправляет импорты типов
+
+### Производительность
+- [x] **React.memo для DashboardCard** — предотвращает лишние ре-рендеры в списке дашбордов
+- [x] **useMemo для filtered/favorites/regular** — мемоизация фильтрации дашбордов
+- [x] **Module-level константы** — `WIDGET_TYPE_ICONS` вынесен из компонента
+- [x] **optimizePackageImports** — оптимизация импортов lucide-react, recharts, date-fns
 
 ---
 
 ## Тестирование / Testing
 
-- [x] **Unit-тесты (Vitest)** — 99 тестов: store (29), API client (13), proxy (8), i18n (4), export-utils (21), chart-palettes (24)
+- [x] **Unit-тесты (Vitest)** — 120 тестов: store (29), API client (13), proxy (13), i18n (4), export-utils (21), chart-palettes (24), error-boundary (5), language-switcher (4), welcome-screen (7)
 - [ ] **E2E-тесты (Playwright)** — не установлен
 
 ---
@@ -92,8 +102,8 @@
 
 | Приоритет | Задачи |
 |-----------|--------|
-| P0 — Блокеры | ~~Убрать `.env`~~, ~~включить `noImplicitAny`~~, ~~исправить SSRF~~ |
-| P1 — Важное | ~~Unit-тесты~~, ~~CI/CD~~, ~~Dockerfile~~, ~~lazy loading~~, ~~Server Components~~ |
-| P2 — Среднее | ~~i18n~~, ~~React Query~~, ~~Prettier~~, ~~import/export~~ |
-| P3 — Желательное | ~~A11y~~, ~~skeleton~~, ~~CONTRIBUTING.md~~ |
-| P4 — Будущее | WebSocket, PDF экспорт, E2E тесты, Cookie-based auth |
+| P0 — Блокеры | ~~Убрать `.env`~~, ~~включить `noImplicitAny`~~, ~~исправить SSRF~~, ~~SSRF-защита~~, ~~Security headers~~ |
+| P1 — Важное | ~~Unit-тесты~~, ~~CI/CD~~, ~~Dockerfile~~, ~~lazy loading~~, ~~Server Components~~, ~~Component tests~~ |
+| P2 — Среднее | ~~i18n~~, ~~React Query~~, ~~Prettier~~, ~~import/export~~, ~~ESLint stricter~~ |
+| P3 — Желательное | ~~A11y~~, ~~skeleton~~, ~~CONTRIBUTING.md~~, ~~React.memo~~, ~~useMemo~~ |
+| P4 — Будущее | WebSocket, E2E тесты, Cookie-based auth, API versioning |

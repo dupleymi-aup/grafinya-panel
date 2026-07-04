@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
+import type { NextRequest} from "next/server";
+import { NextResponse } from "next/server";
 import { z } from "zod";
 
 const ProxyRequestSchema = z.object({
@@ -15,8 +16,30 @@ const ProxyRequestSchema = z.object({
       (url) => url.startsWith("http://") || url.startsWith("https://"),
       "baseUrl must be HTTP(S)"
     ),
-  accessToken: z.string().optional(),
 });
+
+function isPrivateHost(url: string): boolean {
+  try {
+    const { hostname } = new URL(url);
+    const h = hostname.toLowerCase();
+    if (
+      h === "localhost" ||
+      h === "127.0.0.1" ||
+      h === "::1" ||
+      h === "0.0.0.0" ||
+      h.startsWith("10.") ||
+      h.startsWith("192.168.") ||
+      h.startsWith("172.") ||
+      h.endsWith(".internal") ||
+      h.endsWith(".local")
+    ) {
+      return true;
+    }
+    return false;
+  } catch {
+    return true;
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -30,7 +53,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { path, method, body, baseUrl, accessToken } = parsed.data;
+    const { path, method, body, baseUrl } = parsed.data;
+
+    if (isPrivateHost(baseUrl)) {
+      return NextResponse.json({ error: "Requests to private/internal hosts are forbidden" }, { status: 403 });
+    }
+
     const targetUrl = `${baseUrl}/api/v1${path}`;
 
     const headers: Record<string, string> = {
@@ -38,17 +66,19 @@ export async function POST(request: NextRequest) {
       "Accept-Language": "ru-RU",
     };
 
-    if (accessToken) {
-      headers["Authorization"] = `Bearer ${accessToken}`;
-    }
-
     const fetchOptions: RequestInit = { method, headers };
 
     if (body && method !== "GET") {
       fetchOptions.body = JSON.stringify(body);
     }
 
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10_000);
+    fetchOptions.signal = controller.signal;
+
     const response = await fetch(targetUrl, fetchOptions);
+    clearTimeout(timeout);
+
     const contentType = response.headers.get("content-type");
 
     if (!contentType?.includes("application/json")) {
@@ -62,12 +92,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
     console.error("Proxy error:", error);
-    return NextResponse.json(
-      {
-        error: "Proxy request failed",
-        message: error instanceof Error ? error.message : "Unknown error",
-      },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Proxy request failed" }, { status: 500 });
   }
 }

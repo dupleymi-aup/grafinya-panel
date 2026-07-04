@@ -8,12 +8,13 @@ const eslintConfig = [
   prettierConfig,
   {
     rules: {
-      "@typescript-eslint/no-explicit-any": "warn",
-      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+      "@typescript-eslint/no-explicit-any": "error",
+      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
       "@typescript-eslint/no-non-null-assertion": "warn",
       "@typescript-eslint/ban-ts-comment": "warn",
       "@typescript-eslint/prefer-as-const": "off",
       "@typescript-eslint/no-unused-disable-directive": "off",
+      "@typescript-eslint/consistent-type-imports": ["warn", { prefer: "type-imports" }],
 
       "react-hooks/exhaustive-deps": "warn",
       "react-hooks/purity": "warn",
@@ -25,7 +26,7 @@ const eslintConfig = [
       "@next/next/no-img-element": "off",
       "@next/next/no-html-link-for-pages": "off",
 
-      "prefer-const": "warn",
+      "prefer-const": "error",
       "no-unused-vars": "off",
       "no-console": ["warn", { allow: ["warn", "error"] }],
       "no-debugger": "error",

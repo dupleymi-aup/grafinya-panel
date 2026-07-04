@@ -14,6 +14,7 @@ import type {
   Palette,
   Widget,
 } from "./grafinya-api";
+import { generateId } from "./utils";
 
 // ---- View types ----
 export type AppView =
@@ -192,7 +193,7 @@ export const useGraphinyaStore = create<GraphinyaState>()(
         set({
           activityLog: [
             {
-              id: `act-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+              id: generateId("act"),
               timestamp: Date.now(),
               action: "Включён демо-режим",
               category: "system" as const,
@@ -234,7 +235,7 @@ export const useGraphinyaStore = create<GraphinyaState>()(
           palettes: [],
           activityLog: [
             {
-              id: `act-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+              id: generateId("act"),
               timestamp: Date.now(),
               action: "Выход из системы",
               category: "auth" as const,
@@ -352,7 +353,7 @@ export const useGraphinyaStore = create<GraphinyaState>()(
           activityLog: [
             {
               ...entry,
-              id: `act-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+              id: generateId("act"),
               timestamp: Date.now(),
             },
             ...state.activityLog,
