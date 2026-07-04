@@ -60,6 +60,7 @@ import {
   Unlock,
   Play,
   History,
+  FileDown,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { PresentationMode } from "@/components/presentation-mode";
@@ -74,6 +75,7 @@ import { WIDGET_ICONS } from "@/components/dashboard-detail-constants";
 import { WidgetEditorDialog } from "@/components/widget-editor-dialog";
 import { renderWidget } from "@/components/render-widget";
 import { SortableWidgetCard } from "@/components/sortable-widget-card";
+import { exportElementToPdf } from "@/lib/pdf-export";
 
 function deriveSnapshotLabel(
   prev: { t?: string; w?: string[]; v?: string[] },
@@ -615,6 +617,26 @@ export function DashboardDetailView() {
               </Badge>
             )}
           </Button>
+          {/* PDF export button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              const el = document.querySelector("[data-dashboard-content]");
+              if (el instanceof HTMLElement && dashboard) {
+                exportElementToPdf({
+                  element: el,
+                  filename: dashboard.title || "dashboard",
+                  title: dashboard.title,
+                });
+                toast({ title: "PDF экспортируется..." });
+              }
+            }}
+            title="Экспорт в PDF"
+          >
+            <FileDown className="mr-2 h-4 w-4" />
+            PDF
+          </Button>
           {/* Presentation mode button */}
           <Button
             variant="outline"
@@ -679,7 +701,9 @@ export function DashboardDetailView() {
         )}
       </p>
 
-      {/* Stats row */}
+      {/* Content area for PDF export */}
+      <div data-dashboard-content className="space-y-4">
+        {/* Stats row */}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         {statCards.map((stat) => (
           <div key={stat.label} className="bg-card flex items-center gap-3 rounded-xl border p-3">
@@ -781,6 +805,7 @@ export function DashboardDetailView() {
           )}
         </div>
       )}
+      </div>
 
       {/* Widget Editor Dialog */}
       <WidgetEditorDialog
