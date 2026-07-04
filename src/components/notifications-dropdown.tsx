@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useGraphinyaStore } from "@/lib/store";
+import { useTranslation } from "@/hooks/use-translation";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -147,6 +149,8 @@ function formatTime(ts: number): string {
 }
 
 export function NotificationsDropdown() {
+  const { setCurrentView } = useGraphinyaStore();
+  const { t } = useTranslation();
   const [notifications, setNotifications] = useState<AppNotification[]>(() =>
     generateDemoNotifications()
   );
@@ -168,6 +172,11 @@ export function NotificationsDropdown() {
 
   const clearAll = () => {
     setNotifications([]);
+  };
+
+  const handleShowAll = () => {
+    setOpen(false);
+    setCurrentView("activity");
   };
 
   return (
@@ -279,8 +288,8 @@ export function NotificationsDropdown() {
           <>
             <Separator />
             <div className="p-2">
-              <Button variant="ghost" size="sm" className="h-8 w-full text-xs">
-                Показать все уведомления
+              <Button variant="ghost" size="sm" className="h-8 w-full text-xs" onClick={handleShowAll}>
+                {t("nav.activity")}
               </Button>
             </div>
           </>

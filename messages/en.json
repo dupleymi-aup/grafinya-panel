@@ -80,6 +80,18 @@
     "datasourcesCreateConfirm": "Create",
     "datasourcesSave": "Save"
   },
+  "notifications": {
+    "title": "Notifications",
+    "newCount": "{count} new",
+    "markAllRead": "Mark read",
+    "empty": "No notifications",
+    "emptyHint": "New events will appear here",
+    "showAll": "Show all notifications",
+    "justNow": "just now",
+    "minutesAgo": "{count} min ago",
+    "hoursAgo": "{count}h ago",
+    "daysAgo": "{count}d ago"
+  },
   "welcome": {
     "title": "Graphinya",
     "desc": "Data visualization and monitoring system by {lab}",

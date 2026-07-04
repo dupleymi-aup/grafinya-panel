@@ -14,13 +14,11 @@ import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
-  useSortable,
   rectSortingStrategy,
 } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import { useGraphinyaStore, type TimeRange } from "@/lib/store";
 import { useGraphinyaApi } from "@/hooks/use-grafinya-api";
-import type { Dashboard, Widget, DataSource, WidgetType } from "@/lib/grafinya-api";
+import type { Dashboard, Widget } from "@/lib/grafinya-api";
 import {
   DEMO_DASHBOARDS,
   generateTimeSeriesData,
@@ -29,8 +27,6 @@ import {
 } from "@/lib/demo-data";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -43,7 +39,6 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -52,16 +47,10 @@ import {
   LayoutDashboard,
   RefreshCw,
   BarChart3,
-  Table2,
   Clock,
-  Maximize2,
-  TrendingUp,
-  Activity,
   Database,
   Zap,
   Plus,
-  Trash2,
-  Edit3,
   Star,
   Settings2,
   X,
@@ -72,21 +61,6 @@ import {
   Play,
   History,
 } from "lucide-react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  Area,
-  AreaChart,
-  Legend,
-} from "recharts";
 import { useToast } from "@/hooks/use-toast";
 import { PresentationMode } from "@/components/presentation-mode";
 import {
@@ -96,42 +70,11 @@ import {
   pushSnapshot,
   type DashboardSnapshot,
 } from "@/components/dashboard-history";
+import { WIDGET_ICONS } from "@/components/dashboard-detail-constants";
+import { WidgetEditorDialog } from "@/components/widget-editor-dialog";
+import { renderWidget } from "@/components/render-widget";
+import { SortableWidgetCard } from "@/components/sortable-widget-card";
 
-const CHART_COLORS = [
-  "#f59e0b",
-  "#10b981",
-  "#3b82f6",
-  "#ef4444",
-  "#8b5cf6",
-  "#ec4899",
-  "#06b6d4",
-  "#f97316",
-  "#14b8a6",
-  "#6366f1",
-];
-
-const WIDGET_TYPES: { value: WidgetType; label: string; icon: React.ReactNode }[] = [
-  { value: "line", label: "Линейный график", icon: <TrendingUp className="h-4 w-4" /> },
-  { value: "area", label: "Area график", icon: <TrendingUp className="h-4 w-4" /> },
-  { value: "bar", label: "Столбчатая диаграмма", icon: <BarChart3 className="h-4 w-4" /> },
-  { value: "pie", label: "Круговая диаграмма", icon: <Activity className="h-4 w-4" /> },
-  { value: "table", label: "Таблица", icon: <Table2 className="h-4 w-4" /> },
-  { value: "gauge", label: "Индикатор", icon: <Activity className="h-4 w-4" /> },
-];
-
-const WIDGET_ICONS: Record<WidgetType, React.ReactNode> = {
-  line: <TrendingUp className="h-3.5 w-3.5" />,
-  area: <TrendingUp className="h-3.5 w-3.5" />,
-  bar: <BarChart3 className="h-3.5 w-3.5" />,
-  pie: <Activity className="h-3.5 w-3.5" />,
-  table: <Table2 className="h-3.5 w-3.5" />,
-  gauge: <Activity className="h-3.5 w-3.5" />,
-};
-
-/**
- * Build a human-readable label for a snapshot based on what changed
- * relative to the previous snapshot.
- */
 function deriveSnapshotLabel(
   prev: { t?: string; w?: string[]; v?: string[] },
   dashboard: Dashboard
@@ -808,7 +751,6 @@ export function DashboardDetailView() {
                     isWide={isWide}
                     isConnected={isConnected}
                     editMode={editMode}
-                    renderWidget={renderWidget}
                     chartData={chartData}
                     pieData={pieData}
                     tableData={tableData}
@@ -892,458 +834,6 @@ export function DashboardDetailView() {
       {presentationMode && dashboard && (
         <PresentationMode dashboardId={dashboard._id} onExit={() => setPresentationMode(false)} />
       )}
-    </div>
-  );
-}
-
-// ---- Widget Editor Dialog ----
-function WidgetEditorDialog({
-  open,
-  onOpenChange,
-  widget,
-  dataSources,
-  onSave,
-  isDemo,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  widget: Widget | null;
-  dataSources: DataSource[];
-  onSave: (widget: Widget) => void;
-  isDemo: boolean;
-}) {
-  const [title, setTitle] = useState(widget?.title || "");
-  const [type, setType] = useState<WidgetType>(widget?.type || "line");
-  const [cols, setCols] = useState(widget?.cols || 1);
-  const [rows, setRows] = useState(widget?.rows || 2);
-  const [dataSourceId, setDataSourceId] = useState(widget?.dataSourceId || "");
-  const [query, setQuery] = useState(widget?.query || "");
-
-  const handleSave = () => {
-    if (!title.trim()) return;
-    const savedWidget: Widget = {
-      id: widget?.id || `w-${Date.now()}`,
-      title: title.trim(),
-      type,
-      cols,
-      rows,
-      dataSourceId: dataSourceId || undefined,
-      query: query || undefined,
-    };
-    onSave(savedWidget);
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Edit3 className="h-5 w-5 text-amber-500" />
-            {widget ? "Редактировать виджет" : "Новый виджет"}
-          </DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label>Название</Label>
-            <Input
-              placeholder="Название виджета"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Тип визуализации</Label>
-            <Select value={type} onValueChange={(v) => setType(v as WidgetType)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {WIDGET_TYPES.map((t) => (
-                  <SelectItem key={t.value} value={t.value}>
-                    <span className="flex items-center gap-2">
-                      {t.icon}
-                      {t.label}
-                    </span>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Ширина (колонки)</Label>
-              <Select value={String(cols)} onValueChange={(v) => setCols(Number(v))}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1">1 колонка</SelectItem>
-                  <SelectItem value="2">2 колонки</SelectItem>
-                  <SelectItem value="3">3 колонки</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>Высота (ряды)</Label>
-              <Select value={String(rows)} onValueChange={(v) => setRows(Number(v))}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1">1 ряд</SelectItem>
-                  <SelectItem value="2">2 ряда</SelectItem>
-                  <SelectItem value="3">3 ряда</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          {!isDemo && dataSources.length > 0 && (
-            <div className="space-y-2">
-              <Label>Источник данных</Label>
-              <Select value={dataSourceId} onValueChange={setDataSourceId}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Выберите источник" />
-                </SelectTrigger>
-                <SelectContent>
-                  {dataSources.map((ds) => (
-                    <SelectItem key={ds._id} value={ds._id}>
-                      {ds.name} ({ds.pluginId})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-          {isDemo && (
-            <div className="rounded-lg border border-violet-500/20 bg-violet-500/5 p-3 text-xs text-violet-600 dark:text-violet-400">
-              В демо-режиме источник данных привязывается автоматически
-            </div>
-          )}
-          <div className="space-y-2">
-            <Label>Запрос</Label>
-            <Input
-              placeholder='metric="cpu_usage" или SQL запрос'
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              className="font-mono text-sm"
-            />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Отмена
-          </Button>
-          <Button
-            onClick={handleSave}
-            disabled={!title.trim()}
-            className="bg-amber-500 text-white hover:bg-amber-600"
-          >
-            <Save className="mr-2 h-4 w-4" />
-            {widget ? "Сохранить" : "Добавить"}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-// ---- Widget Renderers ----
-function renderWidget(
-  widget: Widget,
-  idx: number,
-  chartData: ReturnType<typeof generateTimeSeriesData>,
-  pieData: ReturnType<typeof generatePieData>,
-  tableData: ReturnType<typeof generateTableData>,
-  isFullscreen = false
-) {
-  const color = CHART_COLORS[idx % CHART_COLORS.length];
-  const color2 = CHART_COLORS[(idx + 1) % CHART_COLORS.length];
-  const height = "100%";
-
-  const tooltipStyle = {
-    backgroundColor: "var(--popover)",
-    border: "1px solid var(--border)",
-    borderRadius: "8px",
-    fontSize: "12px",
-  };
-
-  switch (widget.type) {
-    case "line":
-      return (
-        <ResponsiveContainer width="100%" height={height}>
-          <AreaChart data={chartData}>
-            <defs>
-              <linearGradient id={`gradient-${idx}`} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={color} stopOpacity={0.3} />
-                <stop offset="95%" stopColor={color} stopOpacity={0} />
-              </linearGradient>
-              <linearGradient id={`gradient2-${idx}`} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={color2} stopOpacity={0.2} />
-                <stop offset="95%" stopColor={color2} stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.5} />
-            <XAxis
-              dataKey="time"
-              tick={{ fontSize: isFullscreen ? 11 : 9 }}
-              stroke="var(--muted-foreground)"
-              interval="preserveStartEnd"
-            />
-            <YAxis
-              tick={{ fontSize: isFullscreen ? 11 : 9 }}
-              stroke="var(--muted-foreground)"
-              width={isFullscreen ? 50 : 35}
-            />
-            <Tooltip contentStyle={tooltipStyle} />
-            {isFullscreen && <Legend />}
-            <Area
-              type="monotone"
-              dataKey={idx % 3 === 0 ? "cpu" : idx % 3 === 1 ? "memory" : "requests"}
-              stroke={color}
-              fill={`url(#gradient-${idx})`}
-              strokeWidth={2}
-              name={widget.title}
-            />
-            <Area
-              type="monotone"
-              dataKey="latency"
-              stroke={color2}
-              fill={isFullscreen ? `url(#gradient2-${idx})` : "none"}
-              strokeWidth={1.5}
-              strokeDasharray="4 4"
-              name="Latency"
-            />
-          </AreaChart>
-        </ResponsiveContainer>
-      );
-
-    case "bar":
-      return (
-        <ResponsiveContainer width="100%" height={height}>
-          <BarChart data={chartData.slice(-8)}>
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.5} />
-            <XAxis
-              dataKey="time"
-              tick={{ fontSize: isFullscreen ? 11 : 9 }}
-              stroke="var(--muted-foreground)"
-            />
-            <YAxis
-              tick={{ fontSize: isFullscreen ? 11 : 9 }}
-              stroke="var(--muted-foreground)"
-              width={isFullscreen ? 50 : 35}
-            />
-            <Tooltip contentStyle={tooltipStyle} />
-            {isFullscreen && <Legend />}
-            <Bar
-              dataKey={idx % 2 === 0 ? "disk_read" : "network_in"}
-              fill={color}
-              radius={[3, 3, 0, 0]}
-              name={idx % 2 === 0 ? "Чтение" : "Входящий"}
-            />
-            <Bar
-              dataKey={idx % 2 === 0 ? "disk_write" : "network_out"}
-              fill={color2}
-              radius={[3, 3, 0, 0]}
-              name={idx % 2 === 0 ? "Запись" : "Исходящий"}
-            />
-          </BarChart>
-        </ResponsiveContainer>
-      );
-
-    case "pie":
-      return (
-        <ResponsiveContainer width="100%" height={height}>
-          <PieChart>
-            <Pie
-              data={pieData}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              outerRadius={isFullscreen ? 150 : 55}
-              innerRadius={isFullscreen ? 90 : 30}
-              paddingAngle={2}
-              label={isFullscreen}
-            >
-              {pieData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
-              ))}
-            </Pie>
-            <Tooltip contentStyle={tooltipStyle} />
-            {isFullscreen && <Legend />}
-          </PieChart>
-        </ResponsiveContainer>
-      );
-
-    case "table":
-    default:
-      return (
-        <div className="h-full space-y-1.5 overflow-hidden">
-          <div className="text-muted-foreground grid grid-cols-4 gap-2 border-b pb-1.5 text-[10px] font-medium">
-            <span>Сервис</span>
-            <span>Статус</span>
-            <span className="text-right">Uptime</span>
-            <span className="text-right">Latency</span>
-          </div>
-          <div
-            className={`space-y-1 overflow-y-auto ${isFullscreen ? "max-h-[60vh]" : "max-h-32"}`}
-          >
-            {tableData.map((row) => (
-              <div
-                key={row.name}
-                className="border-border/30 hover:bg-muted/30 grid grid-cols-4 gap-2 rounded border-b px-1 py-1 text-[10px]"
-              >
-                <span className="truncate font-medium">{row.name}</span>
-                <span>
-                  <Badge
-                    variant="outline"
-                    className={`px-1 py-0 text-[8px] ${
-                      row.status === "healthy"
-                        ? "border-emerald-500/30 text-emerald-600"
-                        : row.status === "warning"
-                          ? "border-amber-500/30 text-amber-600"
-                          : "border-red-500/30 text-red-600"
-                    }`}
-                  >
-                    {row.status === "healthy" ? "OK" : row.status === "warning" ? "WARN" : "CRIT"}
-                  </Badge>
-                </span>
-                <span className="text-right font-mono">{row.uptime}</span>
-                <span className="text-right font-mono">{row.latency}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-  }
-}
-
-// ---- Sortable Widget Card for drag-and-drop ----
-interface SortableWidgetCardProps {
-  widget: Widget;
-  idx: number;
-  isWide: boolean;
-  isConnected: boolean;
-  editMode: boolean;
-  renderWidget: (
-    widget: Widget,
-    idx: number,
-    chartData: ReturnType<typeof generateTimeSeriesData>,
-    pieData: ReturnType<typeof generatePieData>,
-    tableData: ReturnType<typeof generateTableData>
-  ) => React.ReactNode;
-  chartData: ReturnType<typeof generateTimeSeriesData>;
-  pieData: ReturnType<typeof generatePieData>;
-  tableData: ReturnType<typeof generateTableData>;
-  onEdit: (widget: Widget) => void;
-  onDelete: (id: string) => void;
-  onFullscreen: (widget: Widget) => void;
-}
-
-function SortableWidgetCard({
-  widget,
-  idx,
-  isWide,
-  isConnected,
-  editMode,
-  renderWidget,
-  chartData,
-  pieData,
-  tableData,
-  onEdit,
-  onDelete,
-  onFullscreen,
-}: SortableWidgetCardProps) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    setActivatorNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: widget.id || `widget-${idx}` });
-
-  const style: React.CSSProperties = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-    zIndex: isDragging ? 50 : "auto",
-  };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={`${isWide ? "md:col-span-2" : ""} ${isDragging ? "rounded-xl ring-2 ring-amber-500" : ""}`}
-    >
-      <Card className="group h-full overflow-hidden transition-all hover:shadow-md">
-        <CardHeader className="pb-2">
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2 truncate text-sm font-medium">
-              {editMode && (
-                <button
-                  ref={setActivatorNodeRef}
-                  {...attributes}
-                  {...listeners}
-                  className="text-muted-foreground hover:text-foreground cursor-grab touch-none active:cursor-grabbing"
-                  title="Перетащите для изменения порядка"
-                  aria-label="Перетащите виджет"
-                >
-                  <GripVertical className="h-3.5 w-3.5" />
-                </button>
-              )}
-              {WIDGET_ICONS[widget.type] || <BarChart3 className="h-3.5 w-3.5" />}
-              {widget.title || "Без названия"}
-            </CardTitle>
-            <div className="flex items-center gap-1">
-              <Badge variant="outline" className="px-1.5 text-[10px]">
-                {widget.type || "chart"}
-              </Badge>
-              {editMode && isConnected && (
-                <>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
-                    onClick={() => onEdit(widget)}
-                  >
-                    <Edit3 className="h-3 w-3" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-destructive h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
-                    onClick={() => onDelete(widget.id)}
-                  >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
-                </>
-              )}
-              {!editMode && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
-                  onClick={() => onFullscreen(widget)}
-                >
-                  <Maximize2 className="h-3 w-3" />
-                </Button>
-              )}
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="pt-0">
-          {widget.dataSourceId ? (
-            <div className="h-44">{renderWidget(widget, idx, chartData, pieData, tableData)}</div>
-          ) : (
-            <div className="text-muted-foreground flex h-44 flex-col items-center justify-center">
-              <Table2 className="mb-2 h-8 w-8 opacity-30" />
-              <p className="text-xs">Нет данных</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
     </div>
   );
 }

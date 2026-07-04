@@ -80,6 +80,18 @@
     "datasourcesCreateConfirm": "Создать",
     "datasourcesSave": "Сохранить"
   },
+  "notifications": {
+    "title": "Уведомления",
+    "newCount": "{count} новых",
+    "markAllRead": "Прочитать",
+    "empty": "Нет уведомлений",
+    "emptyHint": "Новые события появятся здесь",
+    "showAll": "Показать все уведомления",
+    "justNow": "только что",
+    "minutesAgo": "{count} мин назад",
+    "hoursAgo": "{count} ч назад",
+    "daysAgo": "{count} дн назад"
+  },
   "welcome": {
     "title": "Графиня",
     "desc": "Система визуализации и мониторинга данных от {lab}",
