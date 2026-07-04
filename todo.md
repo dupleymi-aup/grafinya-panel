@@ -60,6 +60,8 @@
 - [x] **useMemo для filtered/favorites/regular** — мемоизация фильтрации дашбордов
 - [x] **Module-level константы** — `WIDGET_TYPE_ICONS` вынесен из компонента
 - [x] **optimizePackageImports** — оптимизация импортов lucide-react, recharts, date-fns
+- [x] **Zustand selectors** — useGraphinyaApi использует селекторы для минимизации ре-рендеров
+- [x] **generateId helper** — вынес повторяющийся паттерн генерации ID в утилиту
 
 ---
 
