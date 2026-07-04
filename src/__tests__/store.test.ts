@@ -174,7 +174,7 @@ describe("Graphinya Store", () => {
     });
 
     it("adds widget to dashboard", () => {
-      const widget = { id: "w1", title: "Widget1", type: "graph" };
+      const widget = { id: "w1", title: "Widget1", type: "line" as const };
       useGraphinyaStore.getState().addWidgetToDashboard("d1", widget);
       expect(useGraphinyaStore.getState().dashboards[0].widgets).toHaveLength(1);
       expect(useGraphinyaStore.getState().dashboards[0].widgets![0].id).toBe("w1");
@@ -183,7 +183,7 @@ describe("Graphinya Store", () => {
     it("removes widget from dashboard", () => {
       useGraphinyaStore
         .getState()
-        .addWidgetToDashboard("d1", { id: "w1", title: "W1", type: "graph" });
+        .addWidgetToDashboard("d1", { id: "w1", title: "W1", type: "line" as const });
       useGraphinyaStore.getState().removeWidgetFromDashboard("d1", "w1");
       expect(useGraphinyaStore.getState().dashboards[0].widgets).toHaveLength(0);
     });
@@ -191,10 +191,10 @@ describe("Graphinya Store", () => {
     it("reorders widgets", () => {
       useGraphinyaStore
         .getState()
-        .addWidgetToDashboard("d1", { id: "w1", title: "W1", type: "graph" });
+        .addWidgetToDashboard("d1", { id: "w1", title: "W1", type: "line" as const });
       useGraphinyaStore
         .getState()
-        .addWidgetToDashboard("d1", { id: "w2", title: "W2", type: "table" });
+        .addWidgetToDashboard("d1", { id: "w2", title: "W2", type: "table" as const });
       useGraphinyaStore.getState().reorderWidgetsInDashboard("d1", ["w2", "w1"]);
       const widgets = useGraphinyaStore.getState().dashboards[0].widgets!;
       expect(widgets[0].id).toBe("w2");
@@ -267,7 +267,7 @@ describe("Graphinya Store", () => {
         {
           _id: "imp-2",
           title: "With Widgets",
-          widgets: [{ id: "w1", title: "Widget", type: "graph" }],
+          widgets: [{ id: "w1", title: "Widget", type: "line" as const }],
           variables: [{ name: "env", type: "custom", current: "prod" }],
           refreshTime: 10000,
           createdAt: "2025-01-01",
@@ -289,7 +289,7 @@ describe("Graphinya Store", () => {
           description: "Test desc",
           tags: ["test"],
           isFavorite: true,
-          widgets: [{ id: "w1", title: "W1", type: "bar" }],
+          widgets: [{ id: "w1", title: "W1", type: "bar" as const }],
           createdAt: "2025-01-01",
           updatedAt: "2025-01-02",
         },

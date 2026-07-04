@@ -1,11 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { useGraphinyaStore } from "@/lib/store";
-import { useGraphinyaApi } from "@/hooks/use-grafinya-api";
 import type { Plugin } from "@/lib/grafinya-api";
 import { DEMO_PLUGINS } from "@/lib/demo-data";
+import { useGraphinyaQuery } from "@/hooks/use-graphinya-query";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -46,29 +44,15 @@ const PLUGIN_COLORS: Record<string, string> = {
 export function PluginsView() {
   const { plugins, setPlugins, connectionStatus } =
     useGraphinyaStore();
-  const { call } = useGraphinyaApi();
 
-  const isConnected = connectionStatus === "connected" || connectionStatus === "demo";
-
-  const {
-    data: fetchedPlugins,
-    isLoading,
-  } = useQuery({
-    queryKey: ["plugins", connectionStatus],
-    queryFn: async () => {
-      if (connectionStatus === "demo") return DEMO_PLUGINS;
-      if (connectionStatus !== "connected") return [];
-      const data = await call<Plugin[]>({ path: "/plugins" });
-      return Array.isArray(data) ? data : [];
-    },
-    enabled: isConnected,
+  const { isLoading } = useGraphinyaQuery<Plugin>({
+    queryKey: "plugins",
+    apiPath: "/plugins",
+    setter: setPlugins,
+    demoData: DEMO_PLUGINS,
   });
 
-  useEffect(() => {
-    if (fetchedPlugins) {
-      setPlugins(fetchedPlugins);
-    }
-  }, [fetchedPlugins, setPlugins]);
+  const isConnected = connectionStatus === "connected" || connectionStatus === "demo";
   return (
     <div className="space-y-6">
       {/* Header */}

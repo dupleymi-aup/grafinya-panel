@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState, useCallback } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useGraphinyaStore } from "@/lib/store";
 import { useGraphinyaApi } from "@/hooks/use-grafinya-api";
+import { useGraphinyaQuery } from "@/hooks/use-graphinya-query";
+import { useTranslation } from "@/hooks/use-translation";
 import type { Dashboard } from "@/lib/grafinya-api";
 import { DEMO_DASHBOARDS } from "@/lib/demo-data";
 import { Button } from "@/components/ui/button";
@@ -42,6 +44,7 @@ import {
   Download,
   Upload,
   LayoutTemplate,
+  Copy,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { DashboardTemplates } from "@/components/dashboard-templates";
@@ -59,6 +62,7 @@ export function DashboardsView() {
   } = useGraphinyaStore();
   const { call } = useGraphinyaApi();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [showCreate, setShowCreate] = useState(false);
@@ -72,25 +76,12 @@ export function DashboardsView() {
 
   const isConnected = connectionStatus === "connected" || connectionStatus === "demo";
 
-  const {
-    data: fetchedDashboards,
-    isLoading,
-  } = useQuery({
-    queryKey: ["dashboards", connectionStatus],
-    queryFn: async () => {
-      if (connectionStatus === "demo") return DEMO_DASHBOARDS;
-      if (connectionStatus !== "connected") return [];
-      const data = await call<Dashboard[]>({ path: "/dashboards" });
-      return Array.isArray(data) ? data : [];
-    },
-    enabled: isConnected,
+  const { isLoading } = useGraphinyaQuery<Dashboard>({
+    queryKey: "dashboards",
+    apiPath: "/dashboards",
+    setter: setDashboards,
+    demoData: DEMO_DASHBOARDS,
   });
-
-  useEffect(() => {
-    if (fetchedDashboards) {
-      setDashboards(fetchedDashboards);
-    }
-  }, [fetchedDashboards, setDashboards]);
 
   const handleCreate = async () => {
     if (!newTitle.trim()) return;
@@ -280,11 +271,11 @@ export function DashboardsView() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Дашборды</h2>
+          <h2 className="text-2xl font-bold tracking-tight">{t("views.dashboardsTitle")}</h2>
           <p className="text-muted-foreground">
             {isConnected
-              ? `${dashboards.length} дашборд${dashboards.length === 1 ? "" : dashboards.length < 5 ? "а" : "ов"}`
-              : "Визуализация данных в реальном времени"}
+              ? t("views.dashboardsConnected", { count: String(dashboards.length), suffix: dashboards.length === 1 ? "" : dashboards.length < 5 ? "а" : "ов" })
+              : t("views.dashboardsSubtitle")}
           </p>
         </div>
         {isConnected && (
@@ -299,11 +290,11 @@ export function DashboardsView() {
             />
             <Button variant="outline" onClick={() => setShowTemplates(true)}>
               <LayoutTemplate className="mr-2 h-4 w-4" />
-              Шаблоны
+              {t("views.dashboardsTemplates")}
             </Button>
             <Button variant="outline" onClick={handleImport}>
               <Upload className="mr-2 h-4 w-4" />
-              Импорт
+              {t("views.dashboardsImport")}
             </Button>
             <Button
               onClick={() => setShowCreate(true)}
@@ -341,7 +332,7 @@ export function DashboardsView() {
         <div className="relative">
           <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
           <Input
-            placeholder="Поиск дашбордов..."
+            placeholder={t("views.dashboardsSearch")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9"
@@ -416,7 +407,7 @@ export function DashboardsView() {
                 className="text-xs"
                 onClick={() => toggleAll(regular.map((d) => d._id))}
               >
-                {regular.every((d) => selectedIds.has(d._id)) ? "Снять выделение" : "Выбрать все"}
+                {regular.every((d) => selectedIds.has(d._id)) ? t("views.dashboardsDeselectAll") : t("views.dashboardsSelectAll")}
               </Button>
             )}
           </div>
@@ -464,21 +455,21 @@ export function DashboardsView() {
       <Dialog open={showCreate} onOpenChange={setShowCreate}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Новый дашборд</DialogTitle>
+            <DialogTitle>{t("views.dashboardsCreateTitle")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <Input
-              placeholder="Название дашборда"
+              placeholder={t("views.dashboardsCreateNamePlaceholder")}
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
             />
             <Input
-              placeholder="Описание (необязательно)"
+              placeholder={t("views.dashboardsCreateDescPlaceholder")}
               value={newDesc}
               onChange={(e) => setNewDesc(e.target.value)}
             />
             <Input
-              placeholder="Теги через запятую (необязательно)"
+              placeholder={t("views.dashboardsCreateTagsPlaceholder")}
               value={newTags}
               onChange={(e) => setNewTags(e.target.value)}
             />
@@ -543,9 +534,9 @@ function DashboardCard({
   onOpen,
   onDelete,
   onToggleFavorite,
-  onDuplicate: _onDuplicate,
+  onDuplicate,
   onExport,
-  isDemo: _isDemo,
+  isDemo,
   selectionMode,
   selected,
   onToggleSelection,
@@ -584,6 +575,11 @@ function DashboardCard({
               />
             )}
             {dashboard.title}
+            {isDemo && (
+              <Badge variant="outline" className="text-xs">
+                Demo
+              </Badge>
+            )}
           </CardTitle>
           <div className="flex items-center gap-0.5">
             <Button
@@ -605,6 +601,18 @@ function DashboardCard({
               onClick={() => onOpen(dashboard._id)}
             >
               <ExternalLink className="h-3.5 w-3.5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDuplicate(dashboard);
+              }}
+              title="Дублировать"
+            >
+              <Copy className="h-3.5 w-3.5" />
             </Button>
             <Button
               variant="ghost"

@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useGraphinyaStore } from "@/lib/store";
 import { useGraphinyaApi } from "@/hooks/use-grafinya-api";
+import { useGraphinyaQuery } from "@/hooks/use-graphinya-query";
+import { useTranslation } from "@/hooks/use-translation";
 import type { DataSource, DataSourceField } from "@/lib/grafinya-api";
 import { DEMO_DATASOURCES } from "@/lib/demo-data";
 import { Button } from "@/components/ui/button";
@@ -140,6 +142,7 @@ export function DataSourcesView() {
     useGraphinyaStore();
   const { call } = useGraphinyaApi();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [showCreate, setShowCreate] = useState(false);
@@ -155,25 +158,12 @@ export function DataSourcesView() {
 
   const isConnected = connectionStatus === "connected" || connectionStatus === "demo";
 
-  const {
-    data: fetchedDataSources,
-    isLoading,
-  } = useQuery({
-    queryKey: ["datasources", connectionStatus],
-    queryFn: async () => {
-      if (connectionStatus === "demo") return DEMO_DATASOURCES;
-      if (connectionStatus !== "connected") return [];
-      const data = await call<DataSource[]>({ path: "/datasources" });
-      return Array.isArray(data) ? data : [];
-    },
-    enabled: isConnected,
+  const { isLoading } = useGraphinyaQuery<DataSource>({
+    queryKey: "datasources",
+    apiPath: "/datasources",
+    setter: setDataSources,
+    demoData: DEMO_DATASOURCES,
   });
-
-  useEffect(() => {
-    if (fetchedDataSources) {
-      setDataSources(fetchedDataSources);
-    }
-  }, [fetchedDataSources, setDataSources]);
 
   const handleCreate = async () => {
     if (!newName.trim() || !newPlugin) return;
@@ -324,11 +314,11 @@ export function DataSourcesView() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Источники данных</h2>
+          <h2 className="text-2xl font-bold tracking-tight">{t("views.datasourcesTitle")}</h2>
           <p className="text-muted-foreground">
             {isConnected
-              ? `${dataSources.length} источник${dataSources.length === 1 ? "" : dataSources.length < 5 ? "а" : "ов"} данных`
-              : "Подключения к базам данных, API и файлам"}
+              ? t("views.datasourcesConnected", { count: String(dataSources.length), suffix: dataSources.length === 1 ? "" : dataSources.length < 5 ? "а" : "ов" })
+              : t("views.datasourcesSubtitle")}
           </p>
         </div>
         {isConnected && (
@@ -340,7 +330,7 @@ export function DataSourcesView() {
             className="bg-amber-500 text-white hover:bg-amber-600"
           >
             <Plus className="mr-2 h-4 w-4" />
-            Новый источник
+            {t("views.datasourcesCreate")}
           </Button>
         )}
       </div>

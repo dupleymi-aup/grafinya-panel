@@ -1,11 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { useGraphinyaStore } from "@/lib/store";
-import { useGraphinyaApi } from "@/hooks/use-grafinya-api";
 import type { Module } from "@/lib/grafinya-api";
 import { DEMO_MODULES } from "@/lib/demo-data";
+import { useGraphinyaQuery } from "@/hooks/use-graphinya-query";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,29 +11,15 @@ import { Blocks, CheckCircle2, Settings2, LayoutGrid } from "lucide-react";
 
 export function ModulesView() {
   const { modules, setModules, connectionStatus } = useGraphinyaStore();
-  const { call } = useGraphinyaApi();
 
-  const isConnected = connectionStatus === "connected" || connectionStatus === "demo";
-
-  const {
-    data: fetchedModules,
-    isLoading,
-  } = useQuery({
-    queryKey: ["modules", connectionStatus],
-    queryFn: async () => {
-      if (connectionStatus === "demo") return DEMO_MODULES;
-      if (connectionStatus !== "connected") return [];
-      const data = await call<Module[]>({ path: "/modules" });
-      return Array.isArray(data) ? data : [];
-    },
-    enabled: isConnected,
+  const { isLoading } = useGraphinyaQuery<Module>({
+    queryKey: "modules",
+    apiPath: "/modules",
+    setter: setModules,
+    demoData: DEMO_MODULES,
   });
 
-  useEffect(() => {
-    if (fetchedModules) {
-      setModules(fetchedModules);
-    }
-  }, [fetchedModules, setModules]);
+  const isConnected = connectionStatus === "connected" || connectionStatus === "demo";
 
   return (
     <div className="space-y-6">

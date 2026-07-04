@@ -68,11 +68,6 @@ import {
 import { QueryMetricsBar, useQueryMetrics } from "@/components/query-metrics";
 import { Palette as PaletteIcon } from "lucide-react";
 
-const CHART_COLORS = ["#f59e0b", "#10b981", "#3b82f6", "#ef4444", "#8b5cf6", "#ec4899", "#06b6d4"];
-
-// eslint helper to keep CHART_COLORS used (legacy fallback)
-void CHART_COLORS;
-
 const DEMO_QUERIES = [
   {
     label: "CPU метрики",

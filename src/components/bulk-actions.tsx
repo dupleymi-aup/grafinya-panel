@@ -4,7 +4,6 @@ import { useState, useCallback } from "react";
 import { useGraphinyaStore } from "@/lib/store";
 import type { Dashboard } from "@/lib/grafinya-api";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
@@ -411,5 +410,4 @@ export function SelectionModeButton({ active, onClick, count }: SelectionModeBut
   );
 }
 
-// Re-export Badge for convenience
-void Badge;
+

@@ -1058,7 +1058,7 @@ function renderWidget(
 ) {
   const color = CHART_COLORS[idx % CHART_COLORS.length];
   const color2 = CHART_COLORS[(idx + 1) % CHART_COLORS.length];
-  const height = isFullscreen ? "100%" : "100%";
+  const height = "100%";
 
   const tooltipStyle = {
     backgroundColor: "var(--popover)",
